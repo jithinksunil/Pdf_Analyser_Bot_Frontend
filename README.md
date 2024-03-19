@@ -1,1 +1,1 @@
-start--> yarn:dev
+start--> yarn dev
