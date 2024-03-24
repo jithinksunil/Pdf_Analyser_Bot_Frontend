@@ -1,0 +1,1 @@
+const upload=(axios:any,body:any)=>axios.post('/',body)
