@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Outlet, Route, Routes } from 'react-router-dom';
 import { Routes as AllRoutes } from '../interfaces/other.interface';
 import { Fragment } from 'react/jsx-runtime';
 import { authRoutes } from './auth.routes';
@@ -9,7 +9,7 @@ export function Router() {
   return (
     <>
       {allRoutes.map(({ Layout, routes }, fragmentIndex) => {
-        const RouteLayout = Layout || Fragment;
+        const RouteLayout = Layout || Outlet;
         return (
           <Routes key={`${fragmentIndex}th fragment`}>
             <Route element={<RouteLayout />}>
