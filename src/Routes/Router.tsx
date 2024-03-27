@@ -1,11 +1,12 @@
 import { Outlet, Route, Routes } from 'react-router-dom';
 import { Routes as AllRoutes } from '../interfaces/other.interface';
 import { Fragment } from 'react/jsx-runtime';
-import { authRoutes } from './auth.routes';
 import { RequireAuth } from '../components/authentication';
+import { authRoutes } from './auth.routes';
+import { ananyserRoutes } from './analyser.routes';
 
 export function Router() {
-  const allRoutes: AllRoutes[] = [...authRoutes];
+  const allRoutes: AllRoutes[] = [...authRoutes, ...ananyserRoutes];
   return (
     <>
       {allRoutes.map(({ Layout, routes }, fragmentIndex) => {

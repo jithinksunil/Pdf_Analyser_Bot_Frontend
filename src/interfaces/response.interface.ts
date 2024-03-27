@@ -6,6 +6,9 @@ export interface GetGoogleUrlResponse {
   url: string;
 }
 export interface GenarateTokenRensponse {
-  accessToken: string;
-  refreshToken: string;
+  tokens: {
+    accessToken: string;
+    refreshToken: string;
+  };
+  message: string;
 }

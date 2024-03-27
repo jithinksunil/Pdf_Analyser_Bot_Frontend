@@ -1,15 +1,26 @@
 import { useEffect } from 'react';
 import { genarateToken, getGoogleUrl } from '../../requests';
+import { useNavigate } from 'react-router-dom';
 
 export function Signin() {
+  const navigate = useNavigate();
   const handleSigninWithGoogle = async () => {
-    const res = await getGoogleUrl();
-    window.location.href = res.data.url;
+    try {
+      const res = await getGoogleUrl();
+      window.location.href = res.data.url;
+    } catch (error) {
+      console.log(error);
+    }
   };
   const handleCreateToken = async (code: string) => {
-    const res = await genarateToken(code);
-    localStorage.setItem('accessToken', res.data.accessToken);
-    localStorage.setItem('refreshToken', res.data.refreshToken);
+    try {
+      const res = await genarateToken(code);
+      localStorage.setItem('accessToken', res.data.tokens.accessToken);
+      localStorage.setItem('refreshToken', res.data.tokens.refreshToken);
+      navigate('/analyser');
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {

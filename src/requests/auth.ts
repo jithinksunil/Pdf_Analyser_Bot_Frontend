@@ -12,8 +12,8 @@ export const shakeHandRefreshToken = (refreshToken: string) => {
 };
 
 export const getGoogleUrl = () =>
-  axiosPublic.get<GetGoogleUrlResponse>('/api/auth/google/signin');
+  axiosPublic.get<GetGoogleUrlResponse>('/auth/google/signin');
 export const genarateToken = (code: string) =>
   axiosPublic.get<GenarateTokenRensponse>(
-    '/api/auth/google/generate-token?code=' + code
+    '/auth/google/generate-token?code=' + code
   );

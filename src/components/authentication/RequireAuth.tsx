@@ -5,5 +5,5 @@ interface PropTypes {
 }
 export function RequireAuth({ children }: PropTypes) {
   const accessToken = localStorage.getItem('accessToken');
-  return accessToken ? children : <Navigate to={'/signin'} replace />;
+  return accessToken ? children : <Navigate to={'/'} replace />;
 }
