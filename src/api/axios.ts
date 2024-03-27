@@ -1,10 +1,10 @@
 import axios from 'axios';
 
 export const axiosPublic = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: `${import.meta.env.VITE_BACKEND_URL}/api`,
 });
 
 export const axiosPrivate = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: `${import.meta.env.VITE_BACKEND_URL}/api`,
   headers: { 'Content-Type': 'application/json' },
 });
