@@ -28,7 +28,8 @@ export const useAxiosPrivate = () => {
           prevRequest.sent = true;
           const refreshToken = localStorage.getItem('refreshToken');
           const newAccessToken = await refresh(refreshToken || '');
-          prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+          localStorage.setItem('accessToken', newAccessToken);
+          prevRequest.headers['Authorization'] = newAccessToken;
           return axiosPrivate(prevRequest);
         }
         return Promise.reject(error);

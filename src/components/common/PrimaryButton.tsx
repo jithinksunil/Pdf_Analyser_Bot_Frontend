@@ -9,7 +9,7 @@ export function PrimaryButton({ children, ...props }: PropTypes) {
   return (
     <button
       {...props}
-      className='bg-primary rounded-md px-4 py-1 font-semibold relative'
+      className={`${props.className} bg-primary rounded-custom px-4 py-1 font-semibold relative`}
     >
       {props.isLoading ? <ButtonLoader /> : null}
       <span className={`${props.isLoading ? 'invisible' : ''} text-secondary`}>

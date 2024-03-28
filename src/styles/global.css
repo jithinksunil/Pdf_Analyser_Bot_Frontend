@@ -4,34 +4,45 @@
 
 @layer utilities {
   .bg-primary {
-    background: var(--primary-color) !important;
+    background: var(--primary-color);
   }
   .text-primary {
-    color: var(--primary-color) !important;
+    color: var(--primary-color);
   }
   .border-primary {
-    border-color: var(--primary-color) !important;
+    border-color: var(--primary-color);
   }
   .bg-secondary {
-    background: var(--secondary-color) !important;
+    background: var(--secondary-color);
+  }
+
+  .bg-tertiary {
+    background: var(--tertiary-color);
+  }
+  .bg-quaternary {
+    background-color: var(--quaternary-color);
   }
   .text-secondary {
-    color: var(--secondary-color) !important;
+    color: var(--secondary-color);
   }
   .border-secondary {
-    border-color: var(--secondary-color) !important;
+    border-color: var(--secondary-color);
+  }
+  .rounded-custom {
+    border-radius: 12px;
   }
 }
 :root {
   --primary-color: #a0a4a8;
   --secondary-color: black;
-  --teritiary-color: rgb(26, 26, 26);
+  --tertiary-color: rgb(26, 26, 26);
+  --quaternary-color: rgba(119, 119, 119, 0.717)
 }
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--primary-color);
 }
 body {
@@ -39,7 +50,7 @@ body {
 }
 ::-webkit-scrollbar {
   width: 10px;
-  background-color: var(--teritiary-color);
+  background-color: var(--tertiary-color);
   padding: 20px;
   border-radius: 10px;
 }
