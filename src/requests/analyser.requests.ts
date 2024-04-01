@@ -10,7 +10,7 @@ export const getAnswer = (
   question: string,
   fileId: string
 ) =>
-  axiosPrivate.post<{ answer: string }>('/analyser/' + fileId, {
+  axiosPrivate.post<{ questions: { question: string; answer: string }[] }>('/analyser/' + fileId, {
     question,
   });
 
@@ -19,4 +19,8 @@ export const uploadFile = (axiosPrivate: Axios, formData: FormData) =>
     '/file/upload',
     formData,
     { headers: { 'Content-Type': 'multipart/form-data' } }
+  );
+export const getAllQuestions = (axiosPrivate: Axios, fileId: string) =>
+  axiosPrivate.get<{ questions: { question: string; answer: string }[] }>(
+    '/analyser/get-questions/' + fileId
   );

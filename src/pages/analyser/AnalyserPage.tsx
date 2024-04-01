@@ -1,8 +1,16 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useAxiosPrivate } from '../../hooks';
-import { getAllFiles, getAnswer, uploadFile } from '../../requests';
+import {
+  getAllFiles,
+  getAllQuestions,
+  getAnswer,
+  uploadFile,
+} from '../../requests';
 import { useNavigate } from 'react-router-dom';
 import { FullScreenLoader, PrimaryButton } from '../../components/common';
+import { AttachFile } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
+import { ButtonLoader } from '../../components/common/ButtonLoader';
 
 export function AnalyserPage() {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -26,21 +34,21 @@ export function AnalyserPage() {
   const searchParams = new URLSearchParams(window.location.search);
 
   const fileId = searchParams.get('fileId');
+  console.log('fileId:', fileId);
+
   const [loading, setLoading] = useState(false);
   const [question, setQuestion] = useState<string>('');
   const [questionAnswers, setQuestionAnswers] = useState<
     { question: string; answer: string }[]
   >([]);
+  const [uploading, setUploading] = useState<boolean>(false);
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       const res = await getAnswer(axiosPrivate, question, fileId!);
-      setQuestionAnswers([
-        ...questionAnswers,
-        { question, answer: res.data.answer },
-      ]);
+      setQuestionAnswers(res.data.questions);
       if (textRef.current) {
         textRef.current.value = '';
       }
@@ -53,20 +61,28 @@ export function AnalyserPage() {
   };
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
+      setUploading(true);
       const file: File = e.target.files![0];
-      console.log(file);
-
       const formData = new FormData();
       formData.append('file', file);
       const res = await uploadFile(axiosPrivate, formData);
       const { fileId, name, message } = res.data;
-      setSelectedFile(name);
       navigate('?fileId=' + fileId, { replace: true });
+      setSelectedFile(name);
       await fetchAllFiles();
       console.log(message);
     } catch (error) {
       console.error(error);
+    } finally {
+      setUploading(false);
     }
+  };
+  const handleFetchQuestions = async (id: string, name: string) => {
+    setQuestionAnswers([]);
+    navigate(`?fileId=${id}`);
+    setSelectedFile(name);
+    const res = await getAllQuestions(axiosPrivate, id);
+    setQuestionAnswers(res.data.questions);
   };
   useEffect(() => {
     fetchAllFiles();
@@ -105,21 +121,30 @@ export function AnalyserPage() {
           )}
         </div>
         <form className='flex gap-3 px-5 md:px-20' onSubmit={handleSubmit}>
-          <p onClick={() => fileRef.current?.click()} className='hover:cursor-pointer'>File</p>
-          <input
-            type='file'
-            className='hidden'
-            ref={fileRef}
-            onChange={handleFileChange}
-          />
-          <textarea
-            ref={textRef}
-            className='flex-grow rounded-custom bg-slate-300 text-secondary px-3 py-1 focus:outline-none'
-            onChange={(e) => {
-              setQuestion(e.target.value);
-            }}
-            disabled={!fileId}
-          />
+          <div className='flex flex-grow rounded-custom bg-slate-300 text-secondary py-1 items-center'>
+            <span className='mx-3 border rounded-full'>
+              <IconButton
+                onClick={() => fileRef.current?.click()}
+                disabled={uploading}
+              >
+                {uploading ? <ButtonLoader /> : <AttachFile />}
+              </IconButton>
+            </span>
+            <textarea
+              ref={textRef}
+              className='h-full bg-transparent resize-none flex-grow focus:outline-none pl-2 pr-5 overflow-hidden'
+              onChange={(e) => {
+                setQuestion(e.target.value);
+              }}
+              disabled={!fileId}
+            />
+            <input
+              type='file'
+              className='hidden'
+              ref={fileRef}
+              onChange={handleFileChange}
+            />
+          </div>
           <PrimaryButton isLoading={loading} disabled={loading || !fileId}>
             Get Answer
           </PrimaryButton>
@@ -145,8 +170,7 @@ export function AnalyserPage() {
             <p
               key={id}
               onClick={() => {
-                navigate(`?fileId=${id}`);
-                setSelectedFile(name);
+                handleFetchQuestions(id, name);
               }}
               className={`hover:cursor-pointer hover:bg-quaternary hover:text-secondary py-3 px-10 mr-1 ${
                 fileId == id ? 'bg-primary text-secondary' : ''
