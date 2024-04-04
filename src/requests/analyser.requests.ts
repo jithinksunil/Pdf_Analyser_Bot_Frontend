@@ -27,3 +27,6 @@ export const getAllQuestions = (axiosPrivate: Axios, fileId: string) =>
   axiosPrivate.get<{ questions: { question: string; answer: string }[] }>(
     '/analyser/get-questions/' + fileId
   );
+
+export const deleteFile = (axiosPrivate: Axios, fileId: string) =>
+  axiosPrivate.delete<{ message: string }>('/file/delete/' + fileId);

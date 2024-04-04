@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useAxiosPrivate } from '../../hooks';
 import {
+  deleteFile,
   getAllFiles,
   getAllQuestions,
   getAnswer,
@@ -8,8 +9,14 @@ import {
 } from '../../requests';
 import { useNavigate } from 'react-router-dom';
 import { FullScreenLoader, PrimaryButton } from '../../components/common';
-import { AttachFile, Close, Logout, Segment } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
+import {
+  AttachFile,
+  Close,
+  Delete,
+  Logout,
+  Segment,
+} from '@mui/icons-material';
+import { Button, IconButton } from '@mui/material';
 import { ButtonLoader } from '../../components/common/ButtonLoader';
 import toast from 'react-hot-toast';
 
@@ -43,6 +50,8 @@ export function AnalyserPage() {
     { question: string; answer: string }[]
   >([]);
   const [uploading, setUploading] = useState<boolean>(false);
+  const [deleting, setDeleting] = useState<boolean>(false);
+  const [deletingFile, setDeletingFile] = useState<string>('');
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -69,8 +78,9 @@ export function AnalyserPage() {
       const { fileId, name, message } = res.data;
       navigate('?fileId=' + fileId, { replace: true });
       setSelectedFile(name);
+      setQuestionAnswers([]);
       await fetchAllFiles();
-      console.log(message);
+      toast.success(message)
     } catch (error) {
     } finally {
       setUploading(false);
@@ -89,6 +99,20 @@ export function AnalyserPage() {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     navigate('/');
+    toast.success('Logged out')
+  };
+  const handleDelete = async (id: string) => {
+    try {
+      setDeletingFile(id);
+      setDeleting(true);
+      const res = await deleteFile(axiosPrivate, id);
+      await fetchAllFiles();
+      toast.success(res.data.message);
+    } catch (error) {
+    } finally {
+      setDeleting(false);
+      setDeletingFile('');
+    }
   };
   useEffect(() => {
     fetchAllFiles();
@@ -186,7 +210,7 @@ export function AnalyserPage() {
             : 'w-0 md:w-[300px] opacity-0 md:opacity-100'
         } duration-300 overflow-y-auto overflow-x-hidden flex-shrink-0 bg-tertiary h-screen absolute md:relative top-0 right-0`}
       >
-        <div className='sticky top-0 bg-tertiary h-16  border-b border-gray-600 flex items-center'>
+        <div className='sticky top-0 bg-tertiary h-16  border-b border-gray-600 flex items-center z-10'>
           <span className='md:hidden'>
             <IconButton>
               <Close
@@ -203,17 +227,36 @@ export function AnalyserPage() {
         </div>
         <div className='w-[290px] pb-16'>
           {files.map(({ id, name }, index) => (
-            <p
-              key={id}
-              onClick={() => {
-                handleFetchQuestions(id, name);
-              }}
-              className={`hover:cursor-pointer hover:bg-quaternary hover:text-secondary py-3 px-10 mr-1 ${
-                fileId == id ? 'bg-primary text-secondary' : ''
+            <div
+              className={`flex items-center gap-3 hover:cursor-pointer  hover:text-secondary hover:bg-quaternary pl-10 pr-2 py-3 ${
+                fileId == id ? 'bg-primary text-black' : ''
               }`}
             >
-              {index + 1}. {name}
-            </p>
+              <p
+                key={id}
+                onClick={() => {
+                  handleFetchQuestions(id, name);
+                }}
+                className={`flex-grow ${fileId == id ? 'text-secondary' : ''}`}
+              >
+                {index + 1}. {name}
+              </p>
+              <IconButton
+                onClick={() => {
+                  handleDelete(id);
+                }}
+              >
+                {deleting && id == deletingFile ? (
+                  <ButtonLoader />
+                ) : (
+                  <Delete
+                    className={`${
+                      fileId == id ? 'rounded-full bg-secondary' : ''
+                    }`}
+                  />
+                )}
+              </IconButton>
+            </div>
           ))}
         </div>
       </div>
