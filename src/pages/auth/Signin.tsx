@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { genarateToken, getGoogleUrl } from '../../requests';
 import { useNavigate } from 'react-router-dom';
 import { PrimaryButton } from '../../components/common';
+import toast from 'react-hot-toast';
 
 export function Signin() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -12,9 +13,8 @@ export function Signin() {
       const res = await getGoogleUrl();
       window.location.href = res.data.url;
     } catch (error) {
-      console.log(error);
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
   const handleCreateToken = async (code: string) => {
@@ -23,16 +23,15 @@ export function Signin() {
       const res = await genarateToken(code);
       localStorage.setItem('accessToken', res.data.tokens.accessToken);
       localStorage.setItem('refreshToken', res.data.tokens.refreshToken);
+      toast.success(res.data.message);
       navigate('/analyser');
     } catch (error) {
-      console.log(error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const code = urlParams.get('code');
@@ -46,6 +45,7 @@ export function Signin() {
         type='button'
         onClick={handleSigninWithGoogle}
         isLoading={loading}
+        className='py-3 text-3xl'
       >
         Sign in with google
       </PrimaryButton>

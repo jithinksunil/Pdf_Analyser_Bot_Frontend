@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { axiosPrivate } from '../api/axios';
 import { shakeHandRefreshToken } from '../requests';
+import toast from 'react-hot-toast';
 
 export const useAxiosPrivate = () => {
   const refresh = useCallback(async (refreshToken: string) => {
@@ -32,6 +33,10 @@ export const useAxiosPrivate = () => {
           prevRequest.headers['Authorization'] = newAccessToken;
           return axiosPrivate(prevRequest);
         }
+        console.log(error);
+
+        if (!error.response) toast.error(error.message);
+        else toast.error((error as any).response.data.message);
         return Promise.reject(error);
       }
     );

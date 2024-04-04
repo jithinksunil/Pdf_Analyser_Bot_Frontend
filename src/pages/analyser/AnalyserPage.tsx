@@ -8,9 +8,10 @@ import {
 } from '../../requests';
 import { useNavigate } from 'react-router-dom';
 import { FullScreenLoader, PrimaryButton } from '../../components/common';
-import { AttachFile } from '@mui/icons-material';
+import { AttachFile, Close, Logout, Segment } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { ButtonLoader } from '../../components/common/ButtonLoader';
+import toast from 'react-hot-toast';
 
 export function AnalyserPage() {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -21,12 +22,13 @@ export function AnalyserPage() {
   const [isLoadingPage, setIsLoadingPage] = useState(true);
   const [selectedFile, setSelectedFile] = useState('');
   const axiosPrivate = useAxiosPrivate();
+  const [email, setEmail] = useState<string>('');
   const fetchAllFiles = async () => {
     try {
       const res = await getAllFiles(axiosPrivate);
       setFiles(res.data.files);
+      setEmail(res.data.email);
     } catch (error) {
-      console.log(error);
     } finally {
       setIsLoadingPage(false);
     }
@@ -34,7 +36,6 @@ export function AnalyserPage() {
   const searchParams = new URLSearchParams(window.location.search);
 
   const fileId = searchParams.get('fileId');
-  console.log('fileId:', fileId);
 
   const [loading, setLoading] = useState(false);
   const [question, setQuestion] = useState<string>('');
@@ -54,7 +55,6 @@ export function AnalyserPage() {
       }
       setQuestion('');
     } catch (error) {
-      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -72,7 +72,6 @@ export function AnalyserPage() {
       await fetchAllFiles();
       console.log(message);
     } catch (error) {
-      console.error(error);
     } finally {
       setUploading(false);
     }
@@ -81,8 +80,15 @@ export function AnalyserPage() {
     setQuestionAnswers([]);
     navigate(`?fileId=${id}`);
     setSelectedFile(name);
-    const res = await getAllQuestions(axiosPrivate, id);
-    setQuestionAnswers(res.data.questions);
+    try {
+      const res = await getAllQuestions(axiosPrivate, id);
+      setQuestionAnswers(res.data.questions);
+    } catch (error) {}
+  };
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    navigate('/');
   };
   useEffect(() => {
     fetchAllFiles();
@@ -99,7 +105,9 @@ export function AnalyserPage() {
             </div>
           ) : !fileId ? (
             <div className='h-full flex items-center justify-center'>
-              <p>Upload a file of select one from the list</p>
+              <p className='text-2xl font-bold'>
+                Upload a file or select one from your Drive list !
+              </p>
             </div>
           ) : !questionAnswers.length ? (
             <div className='h-full flex flex-col items-center justify-center gap-4'>
@@ -113,8 +121,14 @@ export function AnalyserPage() {
               <h3 className='text-3xl font-bold mb-10'>{selectedFile}</h3>
               {questionAnswers.map(({ question, answer }) => (
                 <div className='mb-6'>
-                  <p className='leading-7'>Question: {question}</p>
-                  <p className='leading-7'>Answer: {answer}</p>
+                  <p className='leading-7'>
+                    <span className='font-semibold text-lg'>Question</span> :{' '}
+                    {question}
+                  </p>
+                  <p className='leading-7'>
+                    <span className='font-semibold text-lg'>Answer</span> :{' '}
+                    {answer}
+                  </p>
                 </div>
               ))}
             </>
@@ -145,27 +159,49 @@ export function AnalyserPage() {
               onChange={handleFileChange}
             />
           </div>
-          <PrimaryButton isLoading={loading} disabled={loading || !fileId}>
+          <PrimaryButton
+            isLoading={loading}
+            disabled={
+              loading || !fileId || !question || uploading || isLoadingPage
+            }
+          >
             Get Answer
           </PrimaryButton>
         </form>
-        <p
-          className='absolute top-0 right-0 cursor-pointer md:hidden'
-          onClick={() => {
-            setShowSidebar(true);
-          }}
-        >
-          Open
-        </p>
+        <span className='absolute top-3 right-3 md:hidden'>
+          <IconButton
+            onClick={() => {
+              setShowSidebar(true);
+            }}
+            size='large'
+          >
+            <Segment />
+          </IconButton>
+        </span>
       </div>
       <div
         className={`${
           showSidebar
             ? 'w-[300px] opacity-100'
             : 'w-0 md:w-[300px] opacity-0 md:opacity-100'
-        } duration-300 overflow-y-auto overflow-x-hidden flex-shrink-0 bg-tertiary h-screen absolute md:relative top-0 right-0 py-10`}
+        } duration-300 overflow-y-auto overflow-x-hidden flex-shrink-0 bg-tertiary h-screen absolute md:relative top-0 right-0`}
       >
-        <div className='w-[290px] relative '>
+        <div className='sticky top-0 bg-tertiary h-16  border-b border-gray-600 flex items-center'>
+          <span className='md:hidden'>
+            <IconButton>
+              <Close
+                onClick={() => {
+                  setShowSidebar(false);
+                }}
+              />
+            </IconButton>
+          </span>
+          <h3 className='ml-1 md:ml-10'>{email}</h3>
+          <IconButton onClick={handleLogout}>
+            <Logout />
+          </IconButton>
+        </div>
+        <div className='w-[290px] pb-16'>
           {files.map(({ id, name }, index) => (
             <p
               key={id}
@@ -179,14 +215,6 @@ export function AnalyserPage() {
               {index + 1}. {name}
             </p>
           ))}
-          <p
-            className='absolute top-0 left-0 cursor-pointer md:hidden'
-            onClick={() => {
-              setShowSidebar(false);
-            }}
-          >
-            close
-          </p>
         </div>
       </div>
     </div>

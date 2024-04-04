@@ -1,7 +1,7 @@
 import { Axios } from 'axios';
 
 export const getAllFiles = (axiosPrivate: Axios) =>
-  axiosPrivate.get<{ files: [{ id: string; name: string }] }>(
+  axiosPrivate.get<{ files: [{ id: string; name: string }]; email: string }>(
     '/analyser/get-files'
   );
 
@@ -10,9 +10,12 @@ export const getAnswer = (
   question: string,
   fileId: string
 ) =>
-  axiosPrivate.post<{ questions: { question: string; answer: string }[] }>('/analyser/' + fileId, {
-    question,
-  });
+  axiosPrivate.post<{ questions: { question: string; answer: string }[] }>(
+    '/analyser/' + fileId,
+    {
+      question,
+    }
+  );
 
 export const uploadFile = (axiosPrivate: Axios, formData: FormData) =>
   axiosPrivate.post<{ fileId: string; name: string; message: string }>(
