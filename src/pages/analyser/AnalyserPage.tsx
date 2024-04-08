@@ -80,7 +80,7 @@ export function AnalyserPage() {
       setSelectedFile(name);
       setQuestionAnswers([]);
       await fetchAllFiles();
-      toast.success(message)
+      toast.success(message);
     } catch (error) {
     } finally {
       setUploading(false);
@@ -99,7 +99,7 @@ export function AnalyserPage() {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     navigate('/');
-    toast.success('Logged out')
+    toast.success('Logged out');
   };
   const handleDelete = async (id: string) => {
     try {
@@ -228,15 +228,15 @@ export function AnalyserPage() {
         <div className='w-[290px] pb-16'>
           {files.map(({ id, name }, index) => (
             <div
+              onClick={() => {
+                handleFetchQuestions(id, name);
+              }}
               className={`flex items-center gap-3 hover:cursor-pointer  hover:text-secondary hover:bg-quaternary pl-10 pr-2 py-3 ${
                 fileId == id ? 'bg-primary text-black' : ''
               }`}
             >
               <p
                 key={id}
-                onClick={() => {
-                  handleFetchQuestions(id, name);
-                }}
                 className={`flex-grow ${fileId == id ? 'text-secondary' : ''}`}
               >
                 {index + 1}. {name}
