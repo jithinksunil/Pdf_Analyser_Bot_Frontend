@@ -16,7 +16,7 @@ import {
   Logout,
   Segment,
 } from '@mui/icons-material';
-import { Button, IconButton } from '@mui/material';
+import { IconButton } from '@mui/material';
 import { ButtonLoader } from '../../components/common/ButtonLoader';
 import toast from 'react-hot-toast';
 
