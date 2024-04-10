@@ -59,7 +59,6 @@ export function AnalyserPage() {
   >([]);
   const [uploading, setUploading] = useState<boolean>(false);
   const [deleting, setDeleting] = useState<boolean>(false);
-  const [deletingFile, setDeletingFile] = useState<string>('');
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -115,7 +114,6 @@ export function AnalyserPage() {
   };
   const handleDelete = async (id: string) => {
     try {
-      setDeletingFile(id);
       setDeleting(true);
       const res = await deleteFile(axiosPrivate, id);
       if (fileId == id) {
@@ -126,7 +124,6 @@ export function AnalyserPage() {
     } catch (error) {
     } finally {
       setDeleting(false);
-      setDeletingFile('');
     }
   };
   const initialFetching = async () => {
