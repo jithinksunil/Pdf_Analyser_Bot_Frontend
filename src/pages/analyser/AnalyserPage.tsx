@@ -41,6 +41,7 @@ export function AnalyserPage() {
       const res = await getAllFiles(axiosPrivate);
       setFiles(res.data.files);
       setEmail(res.data.email);
+      return res.data.files;
     } catch (error) {
     } finally {
       setIsLoadingPage(false);
@@ -124,8 +125,15 @@ export function AnalyserPage() {
       setDeletingFile('');
     }
   };
+  const initialFetching = async () => {
+    const files = await fetchAllFiles();
+    if (fileId && files) {
+      const file = files.find((item) => item.id == fileId);
+      handleFetchQuestions(fileId, file!.name);
+    }
+  };
   useEffect(() => {
-    fetchAllFiles();
+    initialFetching();
   }, []);
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -166,8 +174,11 @@ export function AnalyserPage() {
               <h3 className='text-xl md:text-3xl font-bold mb-10'>
                 {selectedFile}
               </h3>
-              {questionAnswers.map(({ question, answer }) => (
-                <div ref={scrollRef} className='mb-6 text-base md:text-lg'>
+              {questionAnswers.map(({ question, answer }, index) => (
+                <div
+                  ref={index === questionAnswers.length - 1 ? scrollRef : null}
+                  className='mb-6 text-base md:text-lg'
+                >
                   <p className='leading-7'>
                     <span className='font-semibold '>Question</span> :{' '}
                     {question}
