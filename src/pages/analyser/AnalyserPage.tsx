@@ -14,7 +14,6 @@ import {
   PrimaryButton,
 } from '../../components/common';
 import {
-  ArrowBackIos,
   AttachFile,
   Close,
   Delete,
