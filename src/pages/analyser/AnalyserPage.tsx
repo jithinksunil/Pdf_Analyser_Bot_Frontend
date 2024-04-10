@@ -8,7 +8,11 @@ import {
   uploadFile,
 } from '../../requests';
 import { useNavigate } from 'react-router-dom';
-import { FullScreenLoader, PrimaryButton } from '../../components/common';
+import {
+  FullScreenLoader,
+  InLayoutLoader,
+  PrimaryButton,
+} from '../../components/common';
 import {
   AttachFile,
   Close,
@@ -31,6 +35,7 @@ export function AnalyserPage() {
   const axiosPrivate = useAxiosPrivate();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [email, setEmail] = useState<string>('');
+  const [fetchingQuestions, setFetchingQuestions] = useState(false);
   const fetchAllFiles = async () => {
     try {
       const res = await getAllFiles(axiosPrivate);
@@ -88,13 +93,17 @@ export function AnalyserPage() {
     }
   };
   const handleFetchQuestions = async (id: string, name: string) => {
+    setFetchingQuestions(true);
     setQuestionAnswers([]);
     navigate(`?fileId=${id}`);
     setSelectedFile(name);
     try {
       const res = await getAllQuestions(axiosPrivate, id);
       setQuestionAnswers(res.data.questions);
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      setFetchingQuestions(false);
+    }
   };
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
@@ -139,6 +148,8 @@ export function AnalyserPage() {
                 To ask question related to the content of the pdf!
               </p>
             </div>
+          ) : fetchingQuestions ? (
+            <InLayoutLoader />
           ) : !questionAnswers.length ? (
             <div className='h-full flex flex-col items-center justify-center gap-4'>
               <h3 className='text-3xl md:text-5xl font-medium text-center'>
@@ -241,6 +252,7 @@ export function AnalyserPage() {
             <div
               onClick={() => {
                 handleFetchQuestions(id, name);
+                setShowSidebar(false)
               }}
               className={`flex items-center gap-3 hover:cursor-pointer  hover:text-secondary hover:bg-quaternary pl-10 pr-2 py-3 ${
                 fileId == id ? '!bg-primary text-black' : ''
