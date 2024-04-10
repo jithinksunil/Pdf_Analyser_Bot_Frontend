@@ -143,11 +143,10 @@ export function AnalyserPage() {
             </div>
           ) : !fileId ? (
             <div className='h-full flex items-center justify-center'>
-              <p className='text-2xl font-bold text-center'>
+              <p className='text-2xl font-bold text-center max-w-[850px]'>
                 Please upload a file or choose one from your Google Drive list
-                located in the right sidebar, to ask question related to the
+                located in the right sidebar.And ask question related to the
                 content of the pdf!
-                <ArrowBackIos className='rotate-180' />
                 <br />
               </p>
             </div>
