@@ -29,6 +29,7 @@ export function AnalyserPage() {
   const [isLoadingPage, setIsLoadingPage] = useState(true);
   const [selectedFile, setSelectedFile] = useState('');
   const axiosPrivate = useAxiosPrivate();
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [email, setEmail] = useState<string>('');
   const fetchAllFiles = async () => {
     try {
@@ -117,6 +118,9 @@ export function AnalyserPage() {
   useEffect(() => {
     fetchAllFiles();
   }, []);
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [questionAnswers]);
   return isLoadingPage ? (
     <FullScreenLoader />
   ) : (
@@ -141,7 +145,9 @@ export function AnalyserPage() {
                 {selectedFile}
               </h3>
               <p className=' md:text-xl text-center '>How can i help you?</p>
-              <p className=' md:text-xl text-center '>You can ask question related this pdf!</p>
+              <p className=' md:text-xl text-center '>
+                You can ask question related this pdf!
+              </p>
             </div>
           ) : (
             <>
@@ -149,7 +155,7 @@ export function AnalyserPage() {
                 {selectedFile}
               </h3>
               {questionAnswers.map(({ question, answer }) => (
-                <div className='mb-6 text-base md:text-lg'>
+                <div ref={scrollRef} className='mb-6 text-base md:text-lg'>
                   <p className='leading-7'>
                     <span className='font-semibold '>Question</span> :{' '}
                     {question}
