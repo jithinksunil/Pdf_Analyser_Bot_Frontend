@@ -14,6 +14,7 @@ import {
   PrimaryButton,
 } from '../../components/common';
 import {
+  ArrowBackIos,
   AttachFile,
   Close,
   Delete,
@@ -143,9 +144,11 @@ export function AnalyserPage() {
           ) : !fileId ? (
             <div className='h-full flex items-center justify-center'>
               <p className='text-2xl font-bold text-center'>
-                Upload a file or select one from your Drive list.
+                Please upload a file or choose one from your Google Drive list
+                located in the right sidebar, to ask question related to the
+                content of the pdf!
+                <ArrowBackIos className='rotate-180' />
                 <br />
-                To ask question related to the content of the pdf!
               </p>
             </div>
           ) : fetchingQuestions ? (
@@ -195,7 +198,13 @@ export function AnalyserPage() {
               onChange={(e) => {
                 setQuestion(e.target.value);
               }}
-              disabled={!fileId}
+              disabled={
+                loading ||
+                !fileId ||
+                uploading ||
+                isLoadingPage ||
+                fetchingQuestions
+              }
             />
             <input
               type='file'
@@ -207,7 +216,12 @@ export function AnalyserPage() {
           <PrimaryButton
             isLoading={loading}
             disabled={
-              loading || !fileId || !question || uploading || isLoadingPage
+              loading ||
+              !fileId ||
+              !question ||
+              uploading ||
+              isLoadingPage ||
+              fetchingQuestions
             }
             className='!text-sm !md:text-base'
           >
@@ -252,7 +266,7 @@ export function AnalyserPage() {
             <div
               onClick={() => {
                 handleFetchQuestions(id, name);
-                setShowSidebar(false)
+                setShowSidebar(false);
               }}
               className={`flex items-center gap-3 hover:cursor-pointer  hover:text-secondary hover:bg-quaternary pl-10 pr-2 py-3 ${
                 fileId == id ? '!bg-primary text-black' : ''
