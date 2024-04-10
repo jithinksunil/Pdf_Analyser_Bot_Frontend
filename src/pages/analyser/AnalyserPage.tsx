@@ -23,6 +23,7 @@ import {
 import { IconButton } from '@mui/material';
 import { ButtonLoader } from '../../components/common/ButtonLoader';
 import toast from 'react-hot-toast';
+import { DeleteFileModal, ModalLayout } from '../../components/modal';
 
 export function AnalyserPage() {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -117,6 +118,9 @@ export function AnalyserPage() {
       setDeletingFile(id);
       setDeleting(true);
       const res = await deleteFile(axiosPrivate, id);
+      if (fileId == id) {
+        navigate('/analyser');
+      }
       await fetchAllFiles();
       toast.success(res.data.message);
     } catch (error) {
@@ -273,39 +277,44 @@ export function AnalyserPage() {
         <div className='w-[290px] pb-16'>
           {files.map(({ id, name }, index) => (
             <div
-              onClick={() => {
-                handleFetchQuestions(id, name);
-                setShowSidebar(false);
-              }}
-              className={`flex items-center gap-3 hover:cursor-pointer  hover:text-secondary hover:bg-quaternary pl-10 pr-2 py-3 ${
+              className={`flex items-center hover:cursor-pointer hover:text-secondary hover:bg-quaternary pr-2 ${
                 fileId == id ? '!bg-primary text-black' : ''
               }`}
             >
               <p
+                onClick={() => {
+                  handleFetchQuestions(id, name);
+                  setShowSidebar(false);
+                }}
                 key={id}
-                className={`flex-grow text-sm md:text-base ${
+                className={`flex-grow text-sm md:text-base  pl-10 pr-3 py-3 ${
                   fileId == id ? 'text-secondary' : ''
                 }`}
               >
                 {index + 1}. {name}
               </p>
-              <IconButton
-                onClick={() => {
-                  handleDelete(id);
-                }}
-              >
-                {deleting && id == deletingFile ? (
-                  <ButtonLoader />
-                ) : (
-                  <Delete
-                    className={`${
-                      fileId == id
-                        ? 'rounded-full text-secondary'
-                        : 'text-primary'
-                    }`}
-                  />
-                )}
-              </IconButton>
+              <div>
+                <ModalLayout
+                  component={
+                    <DeleteFileModal
+                      handleDelete={() => {
+                        handleDelete(id);
+                      }}
+                      isDeleting={deleting}
+                    />
+                  }
+                >
+                  <IconButton>
+                    <Delete
+                      className={`${
+                        fileId == id
+                          ? 'rounded-full text-secondary'
+                          : 'text-primary'
+                      }`}
+                    />
+                  </IconButton>
+                </ModalLayout>
+              </div>
             </div>
           ))}
         </div>

@@ -37,6 +37,7 @@
   --secondary-color: black;
   --tertiary-color: rgb(26, 26, 26);
   --quaternary-color: rgba(119, 119, 119, 0.717);
+  --penta-color: rgb(87, 87, 87);
 }
 * {
   margin: 0;
