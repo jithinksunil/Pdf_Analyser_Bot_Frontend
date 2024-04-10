@@ -45,7 +45,7 @@ export function Signin() {
         type='button'
         onClick={handleSigninWithGoogle}
         isLoading={loading}
-        className='py-3 text-3xl'
+        className='py-3 text-xl md:text-3xl'
       >
         Sign in with google
       </PrimaryButton>

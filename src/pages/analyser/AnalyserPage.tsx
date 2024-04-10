@@ -129,29 +129,33 @@ export function AnalyserPage() {
             </div>
           ) : !fileId ? (
             <div className='h-full flex items-center justify-center'>
-              <p className='text-2xl font-bold'>
-                Upload a file or select one from your Drive list !
+              <p className='text-2xl font-bold text-center'>
+                Upload a file or select one from your Drive list.
+                <br />
+                To ask question related to the content of the pdf!
               </p>
             </div>
           ) : !questionAnswers.length ? (
             <div className='h-full flex flex-col items-center justify-center gap-4'>
-              <h3 className='text-5xl font-medium text-center'>
+              <h3 className='text-3xl md:text-5xl font-medium text-center'>
                 {selectedFile}
               </h3>
-              <p className='text-xl text-center'>How can i help you?</p>
+              <p className=' md:text-xl text-center '>How can i help you?</p>
+              <p className=' md:text-xl text-center '>You can ask question related this pdf!</p>
             </div>
           ) : (
             <>
-              <h3 className='text-3xl font-bold mb-10'>{selectedFile}</h3>
+              <h3 className='text-xl md:text-3xl font-bold mb-10'>
+                {selectedFile}
+              </h3>
               {questionAnswers.map(({ question, answer }) => (
-                <div className='mb-6'>
+                <div className='mb-6 text-base md:text-lg'>
                   <p className='leading-7'>
-                    <span className='font-semibold text-lg'>Question</span> :{' '}
+                    <span className='font-semibold '>Question</span> :{' '}
                     {question}
                   </p>
                   <p className='leading-7'>
-                    <span className='font-semibold text-lg'>Answer</span> :{' '}
-                    {answer}
+                    <span className='font-semibold '>Answer</span> : {answer}
                   </p>
                 </div>
               ))}
@@ -170,7 +174,7 @@ export function AnalyserPage() {
             </span>
             <textarea
               ref={textRef}
-              className='h-full bg-transparent resize-none flex-grow focus:outline-none pl-2 pr-5 overflow-hidden'
+              className='text-sm md:text-sm w-full h-full bg-transparent resize-none flex-grow focus:outline-none pl-2 pr-5 overflow-hidden'
               onChange={(e) => {
                 setQuestion(e.target.value);
               }}
@@ -188,6 +192,7 @@ export function AnalyserPage() {
             disabled={
               loading || !fileId || !question || uploading || isLoadingPage
             }
+            className='!text-sm !md:text-base'
           >
             Get Answer
           </PrimaryButton>
@@ -199,7 +204,7 @@ export function AnalyserPage() {
             }}
             size='large'
           >
-            <Segment />
+            <Segment className='text-primary' />
           </IconButton>
         </span>
       </div>
@@ -212,17 +217,17 @@ export function AnalyserPage() {
       >
         <div className='sticky top-0 bg-tertiary h-16  border-b border-gray-600 flex items-center z-10'>
           <span className='md:hidden'>
-            <IconButton>
-              <Close
-                onClick={() => {
-                  setShowSidebar(false);
-                }}
-              />
+            <IconButton
+              onClick={() => {
+                setShowSidebar(false);
+              }}
+            >
+              <Close className='text-primary' />
             </IconButton>
           </span>
           <h3 className='ml-1 md:ml-10'>{email}</h3>
           <IconButton onClick={handleLogout}>
-            <Logout />
+            <Logout className='text-primary' />
           </IconButton>
         </div>
         <div className='w-[290px] pb-16'>
@@ -232,12 +237,14 @@ export function AnalyserPage() {
                 handleFetchQuestions(id, name);
               }}
               className={`flex items-center gap-3 hover:cursor-pointer  hover:text-secondary hover:bg-quaternary pl-10 pr-2 py-3 ${
-                fileId == id ? 'bg-primary text-black' : ''
+                fileId == id ? '!bg-primary text-black' : ''
               }`}
             >
               <p
                 key={id}
-                className={`flex-grow ${fileId == id ? 'text-secondary' : ''}`}
+                className={`flex-grow text-sm md:text-base ${
+                  fileId == id ? 'text-secondary' : ''
+                }`}
               >
                 {index + 1}. {name}
               </p>
@@ -251,7 +258,9 @@ export function AnalyserPage() {
                 ) : (
                   <Delete
                     className={`${
-                      fileId == id ? 'rounded-full bg-secondary' : ''
+                      fileId == id
+                        ? 'rounded-full text-secondary'
+                        : 'text-primary'
                     }`}
                   />
                 )}
