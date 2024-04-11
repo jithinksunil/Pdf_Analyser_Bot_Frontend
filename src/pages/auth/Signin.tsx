@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { PrimaryButton } from '../../components/common';
 import toast from 'react-hot-toast';
 
-export function Signin() {
+export default function Signin() {
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const handleSigninWithGoogle = async () => {

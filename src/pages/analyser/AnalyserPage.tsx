@@ -25,7 +25,7 @@ import { ButtonLoader } from '../../components/common/ButtonLoader';
 import toast from 'react-hot-toast';
 import { DeleteFileModal, ModalLayout } from '../../components/modal';
 
-export function AnalyserPage() {
+export default function AnalyserPage() {
   const [showSidebar, setShowSidebar] = useState(false);
   const textRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -177,6 +177,7 @@ export function AnalyserPage() {
               </h3>
               {questionAnswers.map(({ question, answer }, index) => (
                 <div
+                  key={question}
                   ref={index === questionAnswers.length - 1 ? scrollRef : null}
                   className='mb-6 text-base md:text-lg'
                 >
@@ -274,6 +275,7 @@ export function AnalyserPage() {
         <div className='w-[290px] pb-16'>
           {files.map(({ id, name }, index) => (
             <div
+              key={id}
               className={`flex items-center hover:cursor-pointer hover:text-secondary hover:bg-quaternary pr-2 ${
                 fileId == id ? '!bg-primary text-black' : ''
               }`}
@@ -292,14 +294,13 @@ export function AnalyserPage() {
               </p>
               <div>
                 <ModalLayout
-                  component={
-                    <DeleteFileModal
-                      handleDelete={() => {
-                        handleDelete(id);
-                      }}
-                      isDeleting={deleting}
-                    />
-                  }
+                  Component={DeleteFileModal}
+                  props={{
+                    handleDelete: async () => {
+                      await handleDelete(id);
+                    },
+                    deleting,
+                  }}
                 >
                   <IconButton>
                     <Delete

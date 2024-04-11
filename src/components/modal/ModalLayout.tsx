@@ -17,12 +17,15 @@ const style = {
   padding: '24px',
   outline: 'none',
 };
+
+
 interface PropTypes {
   children: ReactNode;
-  component: ReactNode;
+  Component: any
+  props: any;
 }
 
-export function ModalLayout({ children, component }: PropTypes) {
+export function ModalLayout({ children, Component, props }: PropTypes) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -46,7 +49,9 @@ export function ModalLayout({ children, component }: PropTypes) {
         }}
       >
         <Fade in={open} className=' bg-black'>
-          <Box sx={style}>{component}</Box>
+          <Box sx={style}>
+            <Component {...props} handleClose={handleClose} />
+          </Box>
         </Fade>
       </Modal>
     </div>
