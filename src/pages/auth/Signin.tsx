@@ -24,7 +24,7 @@ export default function Signin() {
       localStorage.setItem('accessToken', res.data.tokens.accessToken);
       localStorage.setItem('refreshToken', res.data.tokens.refreshToken);
       toast.success(res.data.message);
-      navigate('/analyser');
+      navigate('/analyser', { replace: true });
     } catch (error) {
     } finally {
       setLoading(false);
