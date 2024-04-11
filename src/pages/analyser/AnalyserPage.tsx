@@ -116,10 +116,10 @@ export default function AnalyserPage() {
     try {
       setDeleting(true);
       const res = await deleteFile(axiosPrivate, id);
+      await fetchAllFiles();
       if (fileId == id) {
         navigate('/analyser');
       }
-      await fetchAllFiles();
       toast.success(res.data.message);
     } catch (error) {
     } finally {
