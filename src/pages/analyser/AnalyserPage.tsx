@@ -87,10 +87,11 @@ export default function AnalyserPage() {
       formData.append('file', file);
       const res = await uploadFile(axiosPrivate, formData);
       const { fileId, name, message } = res.data;
+      await fetchAllFiles();
       navigate('?fileId=' + fileId, { replace: true });
       setSelectedFile(name);
       setQuestionAnswers([]);
-      await fetchAllFiles();
+      if (fileRef.current) fileRef.current.value = '';
       toast.success(message);
     } catch (error) {
     } finally {
