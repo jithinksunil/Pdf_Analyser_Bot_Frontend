@@ -9,3 +9,8 @@ interface Route {
   path: string;
   requireAuth?: boolean;
 }
+
+export interface File {
+  id: string;
+  name: string;
+}

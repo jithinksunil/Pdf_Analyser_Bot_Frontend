@@ -1,8 +1,6 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useAxiosPrivate } from '../../hooks';
 import {
-  deleteFile,
-  downloadFile,
   getAllFiles,
   getAllQuestions,
   getAnswer,
@@ -14,55 +12,47 @@ import {
   InLayoutLoader,
   PrimaryButton,
 } from '../../components/common';
-import {
-  AttachFile,
-  Close,
-  Delete,
-  Download,
-  Logout,
-  Segment,
-} from '@mui/icons-material';
+import { AttachFile, Segment } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { ButtonLoader } from '../../components/common/ButtonLoader';
 import toast from 'react-hot-toast';
-import { DeleteFileModal, ModalLayout } from '../../components/modal';
+import { SideBar } from '../../components/analyser';
 
 export default function AnalyserPage() {
+  const axiosPrivate = useAxiosPrivate();
+  const navigate = useNavigate();
+  const searchParams = new URLSearchParams(window.location.search);
+
+  const fileId = searchParams.get('fileId');
+  const [files, setFiles] = useState<{ id: string; name: string }[]>([]);
+  const [selectedFile, setSelectedFile] = useState('');
+  const [questionAnswers, setQuestionAnswers] = useState<
+    { question: string; answer: string }[]
+  >([]);
+  const [question, setQuestion] = useState<string>('');
+
+  const [isLoadingPage, setIsLoadingPage] = useState(true);
+  const [fetchingQuestions, setFetchingQuestions] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState<boolean>(false);
+
   const [showSidebar, setShowSidebar] = useState(false);
+
   const textRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
-  const [files, setFiles] = useState<{ id: string; name: string }[]>([]);
-  const [isLoadingPage, setIsLoadingPage] = useState(true);
-  const [selectedFile, setSelectedFile] = useState('');
-  const axiosPrivate = useAxiosPrivate();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [email, setEmail] = useState<string>('');
-  const [fetchingQuestions, setFetchingQuestions] = useState(false);
+
   const fetchAllFiles = async () => {
     try {
       const res = await getAllFiles(axiosPrivate);
       setFiles(res.data.files);
-      setEmail(res.data.email);
       return res.data.files;
     } catch (error) {
     } finally {
       setIsLoadingPage(false);
     }
   };
-  const searchParams = new URLSearchParams(window.location.search);
 
-  const fileId = searchParams.get('fileId');
-
-  const [loading, setLoading] = useState(false);
-  const [question, setQuestion] = useState<string>('');
-  const [questionAnswers, setQuestionAnswers] = useState<
-    { question: string; answer: string }[]
-  >([]);
-  const [uploading, setUploading] = useState<boolean>(false);
-  const [deleting, setDeleting] = useState<boolean>(false);
-  const [downloading, setDownloading] = useState<boolean>(false);
-  const [fileDownload, setFileDownload] = useState<string>('');
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -111,38 +101,7 @@ export default function AnalyserPage() {
       setFetchingQuestions(false);
     }
   };
-  const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    navigate('/');
-    toast.success('Logged out');
-  };
-  const handleDelete = async (id: string) => {
-    try {
-      setDeleting(true);
-      const res = await deleteFile(axiosPrivate, id);
-      await fetchAllFiles();
-      if (fileId == id) {
-        navigate('/analyser');
-      }
-      toast.success(res.data.message);
-    } catch (error) {
-    } finally {
-      setDeleting(false);
-    }
-  };
-  const handleDownload = async (id: string) => {
-    setFileDownload(id);
-    setDownloading(true);
-    try {
-      const res = await downloadFile(axiosPrivate, id);
-      toast.success(res.data.message);
-      window.open(res.data.publicUrl);
-    } catch (error) {
-    } finally {
-      setDownloading(false);
-    }
-  };
+
   const initialFetching = async () => {
     const files = await fetchAllFiles();
     if (fileId && files) {
@@ -150,12 +109,15 @@ export default function AnalyserPage() {
       handleFetchQuestions(fileId, file!.name);
     }
   };
+
   useEffect(() => {
     initialFetching();
   }, []);
+
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [questionAnswers]);
+
   return isLoadingPage ? (
     <FullScreenLoader />
   ) : (
@@ -274,76 +236,13 @@ export default function AnalyserPage() {
             : 'w-0 md:w-[350px] opacity-0 md:opacity-100'
         } duration-300 overflow-y-auto overflow-x-hidden flex-shrink-0 bg-tertiary h-screen absolute md:relative top-0 right-0`}
       >
-        <div className='sticky top-0 bg-tertiary h-16  border-b border-gray-600 flex items-center z-10 pr-2'>
-          <span className='md:hidden'>
-            <IconButton
-              onClick={() => {
-                setShowSidebar(false);
-              }}
-            >
-              <Close className='text-primary' />
-            </IconButton>
-          </span>
-          <h3 className='ml-1 md:ml-10 flex-grow'>{email}</h3>
-          <IconButton onClick={handleLogout}>
-            <Logout className='text-primary' />
-          </IconButton>
-        </div>
-        <div className='w-[340px] pb-16'>
-          {files.map(({ id, name }, index) => (
-            <div
-              key={id}
-              className={`flex items-center hover:cursor-pointer hover:text-secondary hover:bg-quaternary pr-2 ${
-                fileId == id ? '!bg-primary text-black' : ''
-              }`}
-            >
-              <p
-                onClick={() => {
-                  handleFetchQuestions(id, name);
-                  setShowSidebar(false);
-                }}
-                key={id}
-                className={`flex-grow text-sm md:text-base  pl-10 pr-3 py-3 ${
-                  fileId == id ? 'text-secondary' : ''
-                }`}
-              >
-                {index + 1}. {name}
-              </p>
-              <div>
-                <IconButton onClick={() => handleDownload(id)}>
-                  {downloading && fileDownload == id ? (
-                    <ButtonLoader />
-                  ) : (
-                    <Download
-                      className={`${
-                        fileId == id ? 'text-secondary' : 'text-primary'
-                      }`}
-                    />
-                  )}
-                </IconButton>
-              </div>
-              <div>
-                <ModalLayout
-                  Component={DeleteFileModal}
-                  props={{
-                    handleDelete: async () => {
-                      await handleDelete(id);
-                    },
-                    deleting,
-                  }}
-                >
-                  <IconButton>
-                    <Delete
-                      className={`${
-                        fileId == id ? 'text-secondary' : 'text-primary'
-                      }`}
-                    />
-                  </IconButton>
-                </ModalLayout>
-              </div>
-            </div>
-          ))}
-        </div>
+        <SideBar
+          fetchAllFiles={fetchAllFiles}
+          files={files}
+          handleFetchQuestions={handleFetchQuestions}
+          showSideBar={showSidebar}
+          setShowSidebar={setShowSidebar}
+        />
       </div>
     </div>
   );

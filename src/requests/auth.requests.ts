@@ -1,3 +1,4 @@
+import { Axios } from 'axios';
 import { axiosPublic } from '../api/axios';
 import {
   GenarateTokenRensponse,
@@ -17,3 +18,6 @@ export const genarateToken = (code: string) =>
   axiosPublic.get<GenarateTokenRensponse>(
     '/auth/google/generate-token?code=' + code
   );
+
+export const getUserEmail = (axiosPrivate: Axios) =>
+  axiosPrivate.get<{ email: string }>('/auth/profile/');

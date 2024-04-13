@@ -1,2 +1,2 @@
-export * from './auth'
-export * from './analyser.requests'
+export * from './auth.requests';
+export * from './analyser.requests';
