@@ -1,7 +1,7 @@
 import { Axios } from 'axios';
 
 export const getAllFiles = (axiosPrivate: Axios) =>
-  axiosPrivate.get<{ files: { id: string; name: string }[]; email: string }>(
+  axiosPrivate.get<{ files: { id: string; name: string }[] }>(
     '/analyser/get-files'
   );
 
