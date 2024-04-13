@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useAxiosPrivate } from '../../hooks';
 import {
   deleteFile,
+  downloadFile,
   getAllFiles,
   getAllQuestions,
   getAnswer,
@@ -17,6 +18,7 @@ import {
   AttachFile,
   Close,
   Delete,
+  Download,
   Logout,
   Segment,
 } from '@mui/icons-material';
@@ -59,6 +61,8 @@ export default function AnalyserPage() {
   >([]);
   const [uploading, setUploading] = useState<boolean>(false);
   const [deleting, setDeleting] = useState<boolean>(false);
+  const [downloading, setDownloading] = useState<boolean>(false);
+  const [fileDownload, setFileDownload] = useState<string>('');
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -124,6 +128,18 @@ export default function AnalyserPage() {
     } catch (error) {
     } finally {
       setDeleting(false);
+    }
+  };
+  const handleDownload = async (id: string) => {
+    setFileDownload(id);
+    setDownloading(true);
+    try {
+      const res = await downloadFile(axiosPrivate, id);
+      toast.success(res.data.message);
+      window.open(res.data.publicUrl);
+    } catch (error) {
+    } finally {
+      setDownloading(false);
     }
   };
   const initialFetching = async () => {
@@ -253,11 +269,11 @@ export default function AnalyserPage() {
       <div
         className={`${
           showSidebar
-            ? 'w-[300px] opacity-100'
-            : 'w-0 md:w-[300px] opacity-0 md:opacity-100'
+            ? 'w-[350px] opacity-100'
+            : 'w-0 md:w-[350px] opacity-0 md:opacity-100'
         } duration-300 overflow-y-auto overflow-x-hidden flex-shrink-0 bg-tertiary h-screen absolute md:relative top-0 right-0`}
       >
-        <div className='sticky top-0 bg-tertiary h-16  border-b border-gray-600 flex items-center z-10'>
+        <div className='sticky top-0 bg-tertiary h-16  border-b border-gray-600 flex items-center z-10 pr-2'>
           <span className='md:hidden'>
             <IconButton
               onClick={() => {
@@ -267,12 +283,12 @@ export default function AnalyserPage() {
               <Close className='text-primary' />
             </IconButton>
           </span>
-          <h3 className='ml-1 md:ml-10'>{email}</h3>
+          <h3 className='ml-1 md:ml-10 flex-grow'>{email}</h3>
           <IconButton onClick={handleLogout}>
             <Logout className='text-primary' />
           </IconButton>
         </div>
-        <div className='w-[290px] pb-16'>
+        <div className='w-[340px] pb-16'>
           {files.map(({ id, name }, index) => (
             <div
               key={id}
@@ -293,6 +309,19 @@ export default function AnalyserPage() {
                 {index + 1}. {name}
               </p>
               <div>
+                <IconButton onClick={() => handleDownload(id)}>
+                  {downloading && fileDownload == id ? (
+                    <ButtonLoader />
+                  ) : (
+                    <Download
+                      className={`${
+                        fileId == id ? 'text-secondary' : 'text-primary'
+                      }`}
+                    />
+                  )}
+                </IconButton>
+              </div>
+              <div>
                 <ModalLayout
                   Component={DeleteFileModal}
                   props={{
@@ -305,9 +334,7 @@ export default function AnalyserPage() {
                   <IconButton>
                     <Delete
                       className={`${
-                        fileId == id
-                          ? 'rounded-full text-secondary'
-                          : 'text-primary'
+                        fileId == id ? 'text-secondary' : 'text-primary'
                       }`}
                     />
                   </IconButton>

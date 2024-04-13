@@ -30,3 +30,8 @@ export const getAllQuestions = (axiosPrivate: Axios, fileId: string) =>
 
 export const deleteFile = (axiosPrivate: Axios, fileId: string) =>
   axiosPrivate.delete<{ message: string }>('/file/delete/' + fileId);
+
+export const downloadFile = (axiosPrivate: Axios, fileId: string) =>
+  axiosPrivate.get<{ message: string; publicUrl: string }>(
+    '/file/download/' + fileId
+  );
