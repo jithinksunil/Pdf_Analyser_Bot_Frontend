@@ -7,14 +7,14 @@ import { deleteFile, downloadFile, getUserEmail } from '../../requests';
 import toast from 'react-hot-toast';
 import { useAxiosPrivate } from '../../hooks';
 import { useNavigate } from 'react-router-dom';
-import { File } from '../../interfaces';
+import { GFile } from '../../interfaces';
 
 interface PropTypes {
   setShowSidebar: Dispatch<boolean>;
   showSideBar: boolean;
-  fetchAllFiles: () => void;
-  files: File[];
-  handleFetchQuestions: (id: string, name: string) => void;
+  fetchAllFiles: () => Promise<GFile[] | undefined>;
+  files: GFile[];
+  handleFetchQuestions: (id: string, name: string) => Promise<void>;
 }
 
 export function SideBar({
