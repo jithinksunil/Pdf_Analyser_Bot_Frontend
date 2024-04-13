@@ -17,6 +17,7 @@ import { IconButton } from '@mui/material';
 import { ButtonLoader } from '../../components/common/ButtonLoader';
 import toast from 'react-hot-toast';
 import { SideBar } from '../../components/analyser';
+import { GFile, Question } from '../../interfaces';
 
 export default function AnalyserPage() {
   const axiosPrivate = useAxiosPrivate();
@@ -24,19 +25,17 @@ export default function AnalyserPage() {
   const searchParams = new URLSearchParams(window.location.search);
 
   const fileId = searchParams.get('fileId');
-  const [files, setFiles] = useState<{ id: string; name: string }[]>([]);
-  const [selectedFile, setSelectedFile] = useState('');
-  const [questionAnswers, setQuestionAnswers] = useState<
-    { question: string; answer: string }[]
-  >([]);
+  const [files, setFiles] = useState<GFile[]>([]);
+  const [selectedFile, setSelectedFile] = useState<string>('');
+  const [questionAnswers, setQuestionAnswers] = useState<Question[]>([]);
   const [question, setQuestion] = useState<string>('');
 
-  const [isLoadingPage, setIsLoadingPage] = useState(true);
-  const [fetchingQuestions, setFetchingQuestions] = useState(false);
+  const [isLoadingPage, setIsLoadingPage] = useState<boolean>(true);
+  const [fetchingQuestions, setFetchingQuestions] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState<boolean>(false);
 
-  const [showSidebar, setShowSidebar] = useState(false);
+  const [showSidebar, setShowSidebar] = useState<boolean>(false);
 
   const textRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -76,9 +75,9 @@ export default function AnalyserPage() {
       const formData = new FormData();
       formData.append('file', file);
       const res = await uploadFile(axiosPrivate, formData);
-      const { fileId, name, message } = res.data;
+      const { id, name, message } = res.data;
       await fetchAllFiles();
-      navigate('?fileId=' + fileId, { replace: true });
+      navigate('?fileId=' + id, { replace: true });
       setSelectedFile(name);
       setQuestionAnswers([]);
       if (fileRef.current) fileRef.current.value = '';

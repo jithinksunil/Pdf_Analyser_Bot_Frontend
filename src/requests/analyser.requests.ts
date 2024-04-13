@@ -1,38 +1,35 @@
 import { Axios } from 'axios';
+import {
+  DeleteFileResponse,
+  DownloadFileResponse,
+  GetAllFilesResponse,
+  GetAnswerResponse,
+  GetQuestionResponse,
+  UploadFileResponse,
+} from '../interfaces';
 
 export const getAllFiles = (axiosPrivate: Axios) =>
-  axiosPrivate.get<{ files: { id: string; name: string }[] }>(
-    '/analyser/get-files'
-  );
+  axiosPrivate.get<GetAllFilesResponse>('/analyser/get-files');
 
 export const getAnswer = (
   axiosPrivate: Axios,
   question: string,
   fileId: string
 ) =>
-  axiosPrivate.post<{ questions: { question: string; answer: string }[] }>(
-    '/analyser/' + fileId,
-    {
-      question,
-    }
-  );
+  axiosPrivate.post<GetAnswerResponse>('/analyser/' + fileId, {
+    question,
+  });
 
 export const uploadFile = (axiosPrivate: Axios, formData: FormData) =>
-  axiosPrivate.post<{ fileId: string; name: string; message: string }>(
-    '/file/upload',
-    formData,
-    { headers: { 'Content-Type': 'multipart/form-data' } }
-  );
+  axiosPrivate.post<UploadFileResponse>('/file/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
 
 export const getAllQuestions = (axiosPrivate: Axios, fileId: string) =>
-  axiosPrivate.get<{ questions: { question: string; answer: string }[] }>(
-    '/analyser/get-questions/' + fileId
-  );
+  axiosPrivate.get<GetQuestionResponse>('/analyser/get-questions/' + fileId);
 
 export const deleteFile = (axiosPrivate: Axios, fileId: string) =>
-  axiosPrivate.delete<{ message: string }>('/file/delete/' + fileId);
+  axiosPrivate.delete<DeleteFileResponse>('/file/delete/' + fileId);
 
 export const downloadFile = (axiosPrivate: Axios, fileId: string) =>
-  axiosPrivate.get<{ message: string; publicUrl: string }>(
-    '/file/download/' + fileId
-  );
+  axiosPrivate.get<DownloadFileResponse>('/file/download/' + fileId);

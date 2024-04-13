@@ -10,7 +10,12 @@ interface Route {
   requireAuth?: boolean;
 }
 
-export interface File {
+export interface GFile {
   id: string;
   name: string;
+}
+
+export interface Question {
+  question: string;
+  answer: string;
 }
