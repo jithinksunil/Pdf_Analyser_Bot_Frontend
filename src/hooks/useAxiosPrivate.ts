@@ -16,7 +16,10 @@ export const useAxiosPrivate = () => {
         config.headers['Authorization'] = accessToken;
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => {
+        console.log(error);
+        return Promise.reject(error);
+      }
     );
 
     const responseIntercept = axiosPrivate.interceptors.response.use(
@@ -33,10 +36,9 @@ export const useAxiosPrivate = () => {
           prevRequest.headers['Authorization'] = newAccessToken;
           return axiosPrivate(prevRequest);
         }
-        console.log(error);
-
         if (!error.response) toast.error(error.message);
         else toast.error((error as any).response.data.message);
+        console.log(error);
         return Promise.reject(error);
       }
     );
