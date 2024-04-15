@@ -60,16 +60,17 @@ export default function AnalyserPage() {
       try {
         const res = await getAnswer(axiosPrivate, question, fileId!);
         setQuestionAnswers(res.data.questions);
-        if (textRef.current) {
-          textRef.current.value = '';
-        }
+
         setQuestion('');
       } catch (error) {
       } finally {
         setLoadingAnswer(false);
+        if (textRef.current) {
+          textRef.current.value = '';
+        }
       }
     },
-    [textRef.current]
+    [textRef.current, question, fileId]
   );
   const handleFileChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,11 +85,12 @@ export default function AnalyserPage() {
         navigate('?fileId=' + id, { replace: true });
         setSelectedFile(name);
         setQuestionAnswers([]);
-        if (fileRef.current) fileRef.current.value = '';
+
         toast.success(message);
       } catch (error) {
       } finally {
         setUploading(false);
+        if (fileRef.current) fileRef.current.value = '';
       }
     },
     [fileRef.current]
