@@ -2,7 +2,7 @@ import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
-import { ReactNode, useState } from 'react';
+import { memo, ReactNode, useCallback, useState } from 'react';
 import { Colors } from '../../utils';
 
 const style = {
@@ -18,17 +18,16 @@ const style = {
   outline: 'none',
 };
 
-
 interface PropTypes {
   children: ReactNode;
-  Component: any
+  Component: any;
   props: any;
 }
 
-export function ModalLayout({ children, Component, props }: PropTypes) {
+export const ModalLayout = memo(({ children, Component, props }: PropTypes) => {
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleOpen = useCallback(() => setOpen(true), []);
+  const handleClose = useCallback(() => setOpen(false), []);
 
   return (
     <div>
@@ -56,4 +55,4 @@ export function ModalLayout({ children, Component, props }: PropTypes) {
       </Modal>
     </div>
   );
-}
+});

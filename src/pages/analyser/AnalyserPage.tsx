@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { useAxiosPrivate } from '../../hooks';
 import {
   getAllFiles,
@@ -16,8 +16,8 @@ import { AttachFile, Segment } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { ButtonLoader } from '../../components/common/ButtonLoader';
 import toast from 'react-hot-toast';
-import { SideBar } from '../../components/analyser';
 import { GFile, Question } from '../../interfaces';
+import { SideBar } from '../../components/analyser';
 
 export default function AnalyserPage() {
   const axiosPrivate = useAxiosPrivate();
@@ -32,7 +32,7 @@ export default function AnalyserPage() {
 
   const [isLoadingPage, setIsLoadingPage] = useState<boolean>(true);
   const [fetchingQuestions, setFetchingQuestions] = useState<boolean>(false);
-  const [loading, setLoading] = useState(false);
+  const [loadingAnswer, setLoadingAnswer] = useState(false);
   const [uploading, setUploading] = useState<boolean>(false);
 
   const [showSidebar, setShowSidebar] = useState<boolean>(false);
@@ -41,7 +41,7 @@ export default function AnalyserPage() {
   const fileRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const fetchAllFiles = async () => {
+  const fetchAllFiles = useCallback(async () => {
     try {
       const res = await getAllFiles(axiosPrivate);
       setFiles(res.data.files);
@@ -50,44 +50,50 @@ export default function AnalyserPage() {
     } finally {
       setIsLoadingPage(false);
     }
-  };
+  }, []);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
+  const handleSubmit = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      setLoadingAnswer(true);
 
-    try {
-      const res = await getAnswer(axiosPrivate, question, fileId!);
-      setQuestionAnswers(res.data.questions);
-      if (textRef.current) {
-        textRef.current.value = '';
+      try {
+        const res = await getAnswer(axiosPrivate, question, fileId!);
+        setQuestionAnswers(res.data.questions);
+        if (textRef.current) {
+          textRef.current.value = '';
+        }
+        setQuestion('');
+      } catch (error) {
+      } finally {
+        setLoadingAnswer(false);
       }
-      setQuestion('');
-    } catch (error) {
-    } finally {
-      setLoading(false);
-    }
-  };
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      setUploading(true);
-      const file: File = e.target.files![0];
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await uploadFile(axiosPrivate, formData);
-      const { id, name, message } = res.data;
-      await fetchAllFiles();
-      navigate('?fileId=' + id, { replace: true });
-      setSelectedFile(name);
-      setQuestionAnswers([]);
-      if (fileRef.current) fileRef.current.value = '';
-      toast.success(message);
-    } catch (error) {
-    } finally {
-      setUploading(false);
-    }
-  };
-  const handleFetchQuestions = async (id: string, name: string) => {
+    },
+    [textRef.current]
+  );
+  const handleFileChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      try {
+        setUploading(true);
+        const file: File = e.target.files![0];
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await uploadFile(axiosPrivate, formData);
+        const { id, name, message } = res.data;
+        await fetchAllFiles();
+        navigate('?fileId=' + id, { replace: true });
+        setSelectedFile(name);
+        setQuestionAnswers([]);
+        if (fileRef.current) fileRef.current.value = '';
+        toast.success(message);
+      } catch (error) {
+      } finally {
+        setUploading(false);
+      }
+    },
+    [fileRef.current]
+  );
+  const handleFetchQuestions = useCallback(async (id: string, name: string) => {
     setFetchingQuestions(true);
     setQuestionAnswers([]);
     navigate(`?fileId=${id}`);
@@ -99,24 +105,23 @@ export default function AnalyserPage() {
     } finally {
       setFetchingQuestions(false);
     }
-  };
+  }, []);
 
-  const initialFetching = async () => {
+  const initialFetching = useCallback(async () => {
     const files = await fetchAllFiles();
     if (fileId && files) {
       const file = files.find((item) => item.id == fileId);
       handleFetchQuestions(fileId, file!.name);
     }
-  };
-
-  useEffect(() => {
-    initialFetching();
-  }, []);
+  }, [fileId]);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [questionAnswers]);
 
+  useEffect(() => {
+    initialFetching();
+  }, []);
   return isLoadingPage ? (
     <FullScreenLoader />
   ) : (
@@ -188,7 +193,7 @@ export default function AnalyserPage() {
                 setQuestion(e.target.value);
               }}
               disabled={
-                loading ||
+                loadingAnswer ||
                 !fileId ||
                 uploading ||
                 isLoadingPage ||
@@ -203,9 +208,9 @@ export default function AnalyserPage() {
             />
           </div>
           <PrimaryButton
-            isLoading={loading}
+            isLoading={loadingAnswer}
             disabled={
-              loading ||
+              loadingAnswer ||
               !fileId ||
               !question ||
               uploading ||

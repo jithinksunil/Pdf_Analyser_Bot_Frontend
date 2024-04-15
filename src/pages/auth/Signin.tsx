@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { genarateToken, getGoogleUrl } from '../../requests';
 import { useNavigate } from 'react-router-dom';
 import { PrimaryButton } from '../../components/common';
@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 export default function Signin() {
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const handleSigninWithGoogle = async () => {
+  const handleSigninWithGoogle = useCallback(async () => {
     try {
       setLoading(true);
       const res = await getGoogleUrl();
@@ -16,8 +16,8 @@ export default function Signin() {
     } finally {
       setLoading(false);
     }
-  };
-  const handleCreateToken = async (code: string) => {
+  }, []);
+  const handleCreateToken = useCallback(async (code: string) => {
     setLoading(true);
     try {
       const res = await genarateToken(code);
@@ -29,7 +29,7 @@ export default function Signin() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const queryString = window.location.search;

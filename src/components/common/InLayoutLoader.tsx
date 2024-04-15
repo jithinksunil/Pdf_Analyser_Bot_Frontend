@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import Lottie from 'react-lottie';
 import animationData from '../../lotties/screenLoader.json';
 
-export function InLayoutLoader() {
+export const InLayoutLoader = memo(() => {
   const defaultOptions = useMemo(
     () => ({
       loop: true,
@@ -20,4 +20,4 @@ export function InLayoutLoader() {
       <Lottie options={defaultOptions} height={130} width={130} />
     </div>
   );
-}
+});

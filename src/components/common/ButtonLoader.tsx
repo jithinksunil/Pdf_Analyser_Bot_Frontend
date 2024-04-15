@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import Lottie from 'react-lottie';
 import animationData from '../../lotties/buttonLoader.json';
 
-export function ButtonLoader() {
+export const ButtonLoader = memo(() => {
   const defaultOptions = useMemo(
     () => ({
       loop: true,
@@ -20,4 +20,4 @@ export function ButtonLoader() {
       <Lottie options={defaultOptions} height={24} />
     </span>
   );
-}
+});
