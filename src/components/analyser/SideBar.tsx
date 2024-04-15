@@ -101,7 +101,7 @@ export const SideBar = memo(
             <Logout className='text-primary' />
           </IconButton>
         </div>
-        <div className='w-[calc(100%-10px)] pb-16'>
+        <div className='w-[340px] pb-16'>
           {files.map(({ id, name }, index) => (
             <div
               key={id}
