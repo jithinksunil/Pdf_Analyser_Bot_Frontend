@@ -1,5 +1,5 @@
 import { Close, Delete, Download, Logout } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import { ButtonLoader } from '../common/ButtonLoader';
 import { DeleteFileModal, ModalLayout } from '../modal';
 import { Dispatch, memo, useCallback, useEffect, useState } from 'react';
@@ -86,7 +86,15 @@ export const SideBar = memo(
 
     return (
       <>
-        <div className='sticky top-0 bg-tertiary h-16  border-b border-gray-600 flex items-center z-10 pr-2'>
+        <div className='sticky top-0 bg-tertiary h-16  border-b border-gray-600 flex items-center z-10 pl-10 pr-2'>
+          <h3 className='flex-grow overflow-hidden overflow-ellipsis whitespace-nowrap'>
+            {email}
+          </h3>
+          <Tooltip title='Log out'>
+            <IconButton onClick={handleLogout}>
+              <Logout className='text-primary' />
+            </IconButton>
+          </Tooltip>
           <span className='md:hidden'>
             <IconButton
               onClick={() => {
@@ -96,10 +104,6 @@ export const SideBar = memo(
               <Close className='text-primary' />
             </IconButton>
           </span>
-          <h3 className='ml-1 md:ml-10 flex-grow'>{email}</h3>
-          <IconButton onClick={handleLogout}>
-            <Logout className='text-primary' />
-          </IconButton>
         </div>
         <div className='w-[340px] pb-16'>
           {files.map(({ id, name }, index) => (
@@ -115,7 +119,7 @@ export const SideBar = memo(
                   setShowSidebar(false);
                 }}
                 key={id}
-                className={`flex-grow text-sm md:text-base  pl-10 pr-3 py-3 ${
+                className={`flex-grow text-sm md:text-base  pl-10 pr-3 py-3 whitespace-nowrap overflow-hidden overflow-ellipsis ${
                   fileId == id ? 'text-secondary' : ''
                 }`}
               >
