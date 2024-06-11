@@ -7,7 +7,7 @@ import {
 } from '../interfaces';
 
 export const shakeHandRefreshToken = (refreshToken: string) => {
-  return axiosPublic.patch<RefreshResponse>('/auth/google/refresh', {
+  return axiosPublic.post<RefreshResponse>('/auth/google/refresh', {
     refreshToken,
   });
 };

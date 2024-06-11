@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import { genarateToken, getGoogleUrl } from '../../requests';
+import {
+  genarateToken,
+  getGoogleUrl,
+  shakeHandRefreshToken,
+} from '../../requests';
 import { useNavigate } from 'react-router-dom';
 import { PrimaryButton } from '../../components/common';
 import toast from 'react-hot-toast';
@@ -17,6 +21,23 @@ export default function Signin() {
       setLoading(false);
     }
   }, []);
+  const refresh = async () => {
+    setLoading(true);
+    try {
+      const currentRefreshToken = localStorage.getItem('refreshToken');
+      if (currentRefreshToken) {
+        const {
+          data: { accessToken, message },
+        } = await shakeHandRefreshToken(currentRefreshToken);
+        localStorage.setItem('accessToken', accessToken);
+        toast.success(message);
+        navigate('/analyser', { replace: true });
+      }
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleCreateToken = useCallback(async (code: string) => {
     setLoading(true);
     try {
@@ -38,6 +59,9 @@ export default function Signin() {
     if (code) {
       handleCreateToken(code);
     }
+  }, []);
+  useEffect(() => {
+    refresh();
   }, []);
   return (
     <div className='h-screen flex justify-center items-center'>

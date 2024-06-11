@@ -2,7 +2,7 @@ import { GFile, Question } from './other.interface';
 
 export interface RefreshResponse {
   accessToken: string;
-  refreshToken: string;
+  message: string;
 }
 export interface GetGoogleUrlResponse {
   url: string;
